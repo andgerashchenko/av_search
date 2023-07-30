@@ -1,0 +1,14 @@
+﻿[
+  {
+    "source": "Test",
+    "routingNumber": "123456789",
+    "accountNumber": "10987654321",
+    "bankName": "Acme Bank",
+    "accountHolder": {
+      "name": "John Cena"
+    },
+    "additional": {},
+    "result": "Verified",
+    "response": "Test account import."
+  }
+]

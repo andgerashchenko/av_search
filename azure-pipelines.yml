@@ -1,0 +1,59 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool: TestingAgent
+  
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+parameters:
+  - name: ENVIRONMENT
+    displayName: 'Environment'
+    type: string
+    default: ci
+    values:
+      - ci
+      - qa
+      - uat
+
+steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  env:
+    AzureEnv: ${{parameters.ENVIRONMENT}}
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    testAssemblyVer2: |
+      **/AvSearch.dll
+      !**\obj\**
+      !**\bin\**\ref\**
+    diagnosticsEnabled: True
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    runInParallel: true
+  continueOnError: true
+
+- task: SpecFlowPlus@0
+  inputs:
+    generatorSource: 'FeatureFolder'
+    projectFilePath: 'AvSearch'
+    testAssemblyFilePath: 'AvSearch/bin/Release/net6.0/AvSearch.dll'
+    testExecutionJson: 'AvSearch/bin/Release/net6.0/TestExecution.json'

@@ -46,9 +46,9 @@ namespace AvSearch.Steps
             //Creating Client connection
             _client = new RestClient(_authUrl);
             //Creating request to get data from api
-            _request = new RestRequest("/realms/supermarket/protocol/openid-connect/token", Method.POST);
+            _request = new RestRequest("/realms/supermarket/token", Method.POST);
             _request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            _request.AddParameter("username", "test@ramquest.com");
+            _request.AddParameter("username", "test@test.com");
             _request.AddParameter("password", "test123");
             _request.AddParameter("grant_type", "password");
             _request.AddParameter("client_id", "sm-portal");
@@ -67,7 +67,7 @@ namespace AvSearch.Steps
         [Given(@"I login to av import")]
         public void GivenILoginToAvImport()
         {
-            _loginPage.Login(GlobalObjects.UserName = "test@ramquest.com", GlobalObjects.Password = "test123");
+            _loginPage.Login(GlobalObjects.UserName = "test@test.com", GlobalObjects.Password = "test123");
 
         }
      
